@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>QR Scanner für Thunkable</title>
+  <script src="https://unpkg.com/html5-qrcode@2.3.7/minified/html5-qrcode.min.js"></script>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; margin: 0; padding: 0; }
+    #reader { width: 100vw; max-width: 400px; margin: auto; }
+    #result { margin-top: 15px; font-size: 1.2em; color: green; }
+  </style>
+</head>
+<body>
+  <h2>QR Code Scanner</h2>
+  <div id="reader"></div>
+  <div id="result">Noch kein Ergebnis</div>
+
+  <script>
+    function onScanSuccess(decodedText, decodedResult) {
+      document.getElementById('result').innerText = "Gescannter Text: " + decodedText;
+      // Nachricht an Thunkable Web Viewer senden:
+      if (window.ReactNativeWebView && window.ReactNativeWebView.postMessage) {
+        window.ReactNativeWebView.postMessage(decodedText);
+      }
+      // Stoppen nach erstem Scan:
+      html5QrcodeScanner.clear();
+    }
+
+    function onScanFailure(error) {
+      // Keine Aktion nötig, nur Debugging falls gewünscht
+      // console.warn(`Scan error: ${error}`);
+    }
+
+    let html5QrcodeScanner = new Html5QrcodeScanner(
+      "reader", { fps: 10, qrbox: 250 });
+
+    html5QrcodeScanner.render(onScanSuccess, onScanFailure);
+  </script>
+</body>
+</html>
